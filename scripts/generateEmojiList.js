@@ -20,7 +20,7 @@ async function getGithubEmojiIdMap() {
       `:${id}:`,
       getLast(url.split("/"))
             .split(".png")[0]
-            .replace("-", "-200d-")
+            .replace(/-/g, "-200d-")
             .split("-")
             .map(codePointText =>
               String.fromCodePoint(Number.parseInt(codePointText, 16))
