@@ -15,11 +15,10 @@ async function getGithubEmojiIdMap() {
           }
         }
       ))
-    ).map(([id, url]) => [
+    ).filter(([id, url]) => url.includes("/unicode/"))
+    .map(([id, url]) => [
       `:${id}:`,
-      // TODO: Adjust this so that we remove github emoji. So probably use a filter on url.includes. Also remove the 
-      url.includes("/unicode/")
-        ? getLast(url.split("/"))
+      getLast(url.split("/"))
             .split(".png")[0]
             .replace("-", "-200d-")
             .split("-")
@@ -27,7 +26,6 @@ async function getGithubEmojiIdMap() {
               String.fromCodePoint(Number.parseInt(codePointText, 16))
             )
             .join("")
-        : [getLast(url.split("/")).split(".png")[0]] // github's custom emoji
     ])
   );
 }
@@ -75,7 +73,19 @@ async function fetch(url, options = {}) {
 
 async function main() {
   getGithubEmojiIdMap().then((res) => {
-    console.log(res)
+    // console.log(res)
+
+    const json = JSON.stringify(res, undefined, 2);
+
+    const ts = "export const emoji = " + json
+
+    var fs = require('fs');
+    fs.writeFile("test.ts", ts, function(err) {
+        if (err) {
+            console.log(err);
+        }
+    });
+
   }).catch((err) => {
     console.error(err)
   })
